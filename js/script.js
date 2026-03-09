@@ -7,11 +7,12 @@ let employeesArray = [];
 let currentEmployeeIndex = 0;
 
 // UTILITY FUNCTIONS
+// Return the employee's full name
 function employeeFullname(employee) {
   const { name } = employee;
   return `${name.first} ${name.last}`;
 }
-
+// Return the employee's formatted birthday
 function employeeBirthday(employee) {
   const { dob } = employee;
   const birthday = new Date(dob.date);
@@ -20,14 +21,14 @@ function employeeBirthday(employee) {
   const year = birthday.getFullYear();
   return `${month}/${day}/${year}`;
 }
-
+// Return the employee's full address
 function employeeAddress(employee) {
   const { location } = employee;
   return `${location.street.number} ${location.street.name}, ${location.city}, ${location.state} ${location.postcode}
 `;
 }
 
-// INIZIALIZATION
+// INITIALIZATION
 getEmployees();
 displaySearch();
 
@@ -51,7 +52,7 @@ async function getEmployees() {
 function displayEmployees(arr) {
   employeesGallery.innerHTML = " ";
   let employeesHTML = "";
-  arr.forEach((employee, index) => {
+  arr.forEach((employee) => {
     const { picture, location, email } = employee;
     const fullName = employeeFullname(employee);
     const cityState = `${location.city}, ${location.state}`;
@@ -84,7 +85,7 @@ employeesGallery.addEventListener("click", (e) => {
   }
 });
 
-// Create and display the employee modal
+// Create and display the selected employee modal
 function showEmployeeModal(index) {
   // Remove existing modal if one is already open
   document.querySelector(".modal-container")?.remove();
@@ -92,10 +93,10 @@ function showEmployeeModal(index) {
   const { picture, email, cell, location } = employee;
   const fullName = employeeFullname(employee);
   const birthday = employeeBirthday(employee);
-
   const fullAddress = employeeAddress(employee);
   const modalLocation = location.city;
 
+  // Build and insert the modal markup
   const employeeModal = `
    <div class="modal-container">
                 <div class="modal">
@@ -121,15 +122,18 @@ function showEmployeeModal(index) {
   `;
   document.body.insertAdjacentHTML("beforeend", employeeModal);
 
-  // MODAL TOGGLE
+  // MODAL NAVIGATION
+  // Select modal controls
   const prevButton = document.getElementById("modal-prev");
   const nextButton = document.getElementById("modal-next");
+  // Hide navigation buttons at the start or end of the employee list
   if (currentEmployeeIndex === 0) {
     prevButton.style.display = "none";
   }
   if (currentEmployeeIndex === employeesArray.length - 1) {
     nextButton.style.display = "none";
   }
+  // Navigate between employees in the modal
   prevButton.addEventListener("click", () => {
     if (currentEmployeeIndex > 0) {
       currentEmployeeIndex--;
@@ -143,28 +147,29 @@ function showEmployeeModal(index) {
       showEmployeeModal(currentEmployeeIndex);
     }
   });
-
-  const newModalContainer = document.querySelector(".modal-container");
+  // Close the modal with the close button or by clicking the overlay
+  const modalContainer = document.querySelector(".modal-container");
   const closeButton = document.getElementById("modal-close-btn");
-  // Close the modal when the X button is clicked
+
   closeButton.addEventListener("click", () => {
-    newModalContainer.remove();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const modal = document.querySelector(".modal-container");
-      if (modal) {
-        modal.remove();
-      }
-    }
+    modalContainer.remove();
   });
 
-  newModalContainer.addEventListener("click", (e) => {
-    if (e.target === newModalContainer) {
-      newModalContainer.remove();
+  modalContainer.addEventListener("click", (e) => {
+    if (e.target === modalContainer) {
+      modalContainer.remove();
     }
   });
 }
+// Close the modal when the Escape key is pressed
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = document.querySelector(".modal-container");
+    if (modal) {
+      modal.remove();
+    }
+  }
+});
 // SEARCH FUNCTIONALITY
 
 // Create and display the search form
