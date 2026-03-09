@@ -120,15 +120,51 @@ function showEmployeeModal(index) {
             </div>
   `;
   document.body.insertAdjacentHTML("beforeend", employeeModal);
+
+  // MODAL TOGGLE
+  const prevButton = document.getElementById("modal-prev");
+  const nextButton = document.getElementById("modal-next");
+  if (currentEmployeeIndex === 0) {
+    prevButton.style.display = "none";
+  }
+  if (currentEmployeeIndex === employeesArray.length - 1) {
+    nextButton.style.display = "none";
+  }
+  prevButton.addEventListener("click", () => {
+    if (currentEmployeeIndex > 0) {
+      currentEmployeeIndex--;
+      showEmployeeModal(currentEmployeeIndex);
+    }
+  });
+
+  nextButton.addEventListener("click", () => {
+    if (currentEmployeeIndex < employeesArray.length - 1) {
+      currentEmployeeIndex++;
+      showEmployeeModal(currentEmployeeIndex);
+    }
+  });
+
   const newModalContainer = document.querySelector(".modal-container");
   const closeButton = document.getElementById("modal-close-btn");
   // Close the modal when the X button is clicked
   closeButton.addEventListener("click", () => {
     newModalContainer.remove();
   });
-}
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const modal = document.querySelector(".modal-container");
+      if (modal) {
+        modal.remove();
+      }
+    }
+  });
 
-// EXTRA CREDITS
+  newModalContainer.addEventListener("click", (e) => {
+    if (e.target === newModalContainer) {
+      newModalContainer.remove();
+    }
+  });
+}
 // SEARCH FUNCTIONALITY
 
 // Create and display the search form
