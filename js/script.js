@@ -6,6 +6,27 @@ const employeesGallery = document.getElementById("gallery");
 let employeesArray = [];
 let currentEmployeeIndex = 0;
 
+// UTILITY FUNCTIONS
+function employeeFullname(employee) {
+  const { name } = employee;
+  return `${name.first} ${name.last}`;
+}
+
+function employeeBirthday(employee) {
+  const { dob } = employee;
+  const birthday = new Date(dob.date);
+  const month = birthday.getMonth() + 1;
+  const day = birthday.getDate();
+  const year = birthday.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+function employeeAddress(employee) {
+  const { location } = employee;
+  return `${location.street.number} ${location.street.name}, ${location.city}, ${location.state} ${location.postcode}
+`;
+}
+
 // INIZIALIZATION
 getEmployees();
 displaySearch();
@@ -31,12 +52,12 @@ function displayEmployees(arr) {
   employeesGallery.innerHTML = " ";
   let employeesHTML = "";
   arr.forEach((employee, index) => {
-    const { name, picture, location, email } = employee;
-    const fullName = `${name.first} ${name.last}`;
+    const { picture, location, email } = employee;
+    const fullName = employeeFullname(employee);
     const cityState = `${location.city}, ${location.state}`;
-
+    const realIndex = employeesArray.indexOf(employee);
     employeesHTML += `
-         <div class="card" data-index=${index}>
+         <div class="card" data-index=${realIndex}>
                     <div class="card-img-container">
                         <img class="card-img" src="${picture.medium}" alt="employee's picture">
                     </div>
@@ -68,16 +89,11 @@ function showEmployeeModal(index) {
   // Remove existing modal if one is already open
   document.querySelector(".modal-container")?.remove();
   const employee = employeesArray[index];
-  const { name, location, picture, email, cell, dob } = employee;
-  const fullName = name.first + " " + name.last;
-  const birthday = new Date(dob.date);
-  const month = birthday.getMonth() + 1;
-  const day = birthday.getDate();
-  const year = birthday.getFullYear();
-  const formattedBirthday = `${month}/${day}/${year}`;
+  const { picture, email, cell, location } = employee;
+  const fullName = employeeFullname(employee);
+  const birthday = employeeBirthday(employee);
 
-  const fullAddress = ` ${location.street.number} ${location.street.name}, ${location.city}, ${location.state} ${location.postcode}
-`;
+  const fullAddress = employeeAddress(employee);
   const modalLocation = location.city;
 
   const employeeModal = `
@@ -92,7 +108,7 @@ function showEmployeeModal(index) {
                         <hr>
                         <p class="modal-text">${cell}</p>
                         <p class="modal-text">${fullAddress} </p>
-                        <p class="modal-text">Birthday: ${formattedBirthday}</p>
+                        <p class="modal-text">Birthday: ${birthday}</p>
                     </div>
                 </div>
 
@@ -113,10 +129,13 @@ function showEmployeeModal(index) {
 }
 
 // EXTRA CREDITS
+// SEARCH FUNCTIONALITY
+
+// Create and display the search form
 function displaySearch() {
   const formSearch = `
      <form>
-                            <input type="search" id="search-input" class="search-input" placeholder="Search...">
+                            <input type="text" id="search-input" class="search-input" placeholder="Search...">
                             <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
                         </form>
     `;
@@ -124,29 +143,34 @@ function displaySearch() {
   searchContainer.insertAdjacentHTML("beforeend", formSearch);
 }
 
-const userInput = document.getElementById("search-input");
-
-userInput.addEventListener("keyup", (e) => {
-  e.preventDefault();
+// Return employees whose name matches the search input
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("keyup", (e) => {
   const searchValue = e.target.value.toLowerCase().trim();
-  const displaySearchResults = employeesArray.filter((employee) => {
-    const { name } = employee;
-    const fullName = (name.first + " " + name.last).toLowerCase();
-    if (fullName.includes(searchValue)) {
-      return employee;
-    }
-  });
-  if (displaySearchResults.length === 0) {
+  const filteredEmployees = getFilteredEmployees(searchValue);
+  renderSearchResults(filteredEmployees);
+});
+
+function getFilteredEmployees(searchValue) {
+  return employeesArray.filter((employee) =>
+    employeeFullname(employee).toLowerCase().includes(searchValue),
+  );
+}
+
+// Render filtered employees or display an empty state
+function renderSearchResults(arr) {
+  if (arr.length === 0) {
     employeesGallery.innerHTML = "";
     const emptyStateMessage = document.createElement("h3");
     emptyStateMessage.textContent = "No employees found.";
     employeesGallery.appendChild(emptyStateMessage);
   } else {
-    displayEmployees(displaySearchResults);
+    displayEmployees(arr);
   }
-});
+}
 
-const form = document.querySelector("form");
-form.addEventListener("submit", (e) => {
+// Prevent form submission from refreshing the page
+const searchForm = document.querySelector("form");
+searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
 });
