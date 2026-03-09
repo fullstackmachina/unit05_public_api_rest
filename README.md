@@ -5,7 +5,7 @@ Treehouse Full Stack JavaScript Techdegree – Unit 05
 
 This project focuses on building a dynamic employee directory that retrieves and displays user data from a public API. The application uses asynchronous JavaScript to fetch remote data, dynamically generates UI components, and allows users to interact with employee profiles through modals and search functionality.
 
-🔗 Live: https://fullstackmachina.github.io/unit05_public_api_rest/
+🔗 Live: https://fullstackmachina.github.io/unit05_public_api_request/
 
 📸 Preview image ![alt text](preview_project5.png)
 
